@@ -1,4 +1,4 @@
-# dynamic_puzzle
+# FlutterDynamicPuzzleGame
 
 A puzzle game of flutter.
 
