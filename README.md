@@ -1,6 +1,6 @@
 # dynamic_puzzle
 
-A new Flutter application.
+A puzzle game of flutter.
 
 ## Getting Started
 
