@@ -218,14 +218,101 @@ class _PuzzleMatrixWidgetState extends State<PuzzleMatrixWidget> {
     // );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return OrientationBuilder(builder: (context, orientation) {
-      if (orientation == Orientation.portrait) {
-        return Stack(
-          children: [
-            SafeArea(
-              child: Column(
+  portraitWidget() {
+    return Stack(
+      children: [
+        SafeArea(
+          child: Column(
+            children: [
+              Spacer(),
+              Text('Matrix Size: $matrix'),
+              Slider(
+                  max: 7,
+                  min: 2,
+                  divisions: 5,
+                  label: matrix.round().toString(),
+                  value: matrix.toDouble(),
+                  onChanged: (double changeValue) {
+                    print('changeValue: ${changeValue}');
+                    if (matrix != changeValue.round()) {
+                      matrix = changeValue.round();
+                      initGame();
+                    }
+                  }),
+              SizedBox(height: 20),
+              Text('Shuffle Level: $level'),
+              Slider(
+                  max: 4,
+                  min: 1,
+                  divisions: 3,
+                  label: level.round().toString(),
+                  value: level.toDouble(),
+                  onChanged: (double changeValue) {
+                    if (kDebugMode) {
+                      print('changeValue: ${changeValue}');
+                    }
+                    if (level != changeValue.round()) {
+                      level = changeValue.round();
+                      initGame();
+                    }
+                  }),
+              Spacer(),
+              Text('Moves: $moves'),
+              SizedBox(height: 20),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                // color: gameIsOver ? Colors.green : Colors.orange,
+                child: puzzlePieces.isEmpty ? const CircularProgressIndicator() : FittedBox(child: _generateMatrixWidget(puzzlePieces)),
+              ),
+              Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                Flexible(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      initGame();
+                    },
+                    child: FittedBox(child: Text('Refresh')),
+                  ),
+                ),
+                Flexible(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      autoChange();
+                    },
+                    child: FittedBox(
+                      child: Text('Auto'),
+                    ),
+                  ),
+                ),
+              ],),
+              Spacer(),
+            ],
+          ),
+        ),
+        autoRun
+            ? Container(
+          padding: EdgeInsets.all(20),
+          color: Colors.black12,
+          child: const CircularProgressIndicator.adaptive(),
+          alignment: Alignment.center,
+        )
+            : Container(),
+      ],
+    );
+  }
+
+  landscapeWidget() {
+    return Stack(
+      children: [
+        SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Column(
                 children: [
                   Spacer(),
                   Text('Matrix Size: $matrix'),
@@ -260,131 +347,67 @@ class _PuzzleMatrixWidgetState extends State<PuzzleMatrixWidget> {
                         }
                       }),
                   Spacer(),
-                  Text('Moves: $moves'),
-                  SizedBox(height: 20),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    // color: gameIsOver ? Colors.green : Colors.orange,
-                    child: puzzlePieces.isEmpty ? const CircularProgressIndicator() : FittedBox(child: _generateMatrixWidget(puzzlePieces)),
-                  ),
-                  Spacer(),
-                  Flexible(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        initGame();
-                      },
-                      child: FittedBox(child: Text('Refresh')),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Flexible(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        autoChange();
-                      },
-                      child: FittedBox(
-                        child: Text('AutoMove'),
-                      ),
-                    ),
-                  ),
-                  Spacer(),
                 ],
               ),
-            ),
-            autoRun
-                ? Container(
-                    padding: EdgeInsets.all(20),
-                    color: Colors.black12,
-                    child: const CircularProgressIndicator.adaptive(),
-                    alignment: Alignment.center,
-                  )
-                : Container(),
-          ],
-        );
-      } else {
-        return Stack(
-          children: [
-            SafeArea(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Column(
-                    children: [
-                      Spacer(),
-                      Text('Matrix Size: $matrix'),
-                      Slider(
-                          max: 7,
-                          min: 2,
-                          divisions: 5,
-                          label: matrix.round().toString(),
-                          value: matrix.toDouble(),
-                          onChanged: (double changeValue) {
-                            print('changeValue: ${changeValue}');
-                            if (matrix != changeValue.round()) {
-                              matrix = changeValue.round();
-                              initGame();
-                            }
-                          }),
-                      SizedBox(height: 20),
-                      Text('Shuffle Level: $level'),
-                      Slider(
-                          max: 4,
-                          min: 1,
-                          divisions: 3,
-                          label: level.round().toString(),
-                          value: level.toDouble(),
-                          onChanged: (double changeValue) {
-                            if (kDebugMode) {
-                              print('changeValue: ${changeValue}');
-                            }
-                            if (level != changeValue.round()) {
-                              level = changeValue.round();
-                              initGame();
-                            }
-                          }),
-                      Spacer(),
-                      ElevatedButton(
+              Container(
+                child: puzzlePieces.isEmpty
+                    ? const CircularProgressIndicator()
+                    : Container(
+                  margin: const EdgeInsets.all(16),
+                  // color: gameIsOver ? Colors.green : Colors.orange,
+                  child: FittedBox(child: _generateMatrixWidget(puzzlePieces)),
+                ),
+              ),
+              Flexible(
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    Flexible(child: Text('Moves: $moves')),
+                    Spacer(),
+                    FittedBox(
+                      child: ElevatedButton(
                         onPressed: () {
                           initGame();
                         },
                         child: Text('Refresh'),
                       ),
-                      SizedBox(height: 20),
-                      ElevatedButton(
+                    ),
+                    Spacer(),
+                    FittedBox(
+                      child: ElevatedButton(
+
                         onPressed: () {
                           autoChange();
                         },
                         child: Text('AutoMove'),
                       ),
-                      Spacer(),
-                    ],
-                  ),
-                  Spacer(),
-                  Container(
-                    child: puzzlePieces.isEmpty
-                        ? const CircularProgressIndicator()
-                        : Container(
-                            margin: const EdgeInsets.all(16),
-                            // color: gameIsOver ? Colors.green : Colors.orange,
-                            child: FittedBox(child: _generateMatrixWidget(puzzlePieces)),
-                          ),
-                  ),
-                  Spacer(),
-                  Text('Moves: $moves'),
-                  SizedBox(width: 16),
-                ],
+                    ),
+                    Spacer(),
+                  ],
+                ),
               ),
-            ),
-            autoRun
-                ? Container(
-                    padding: EdgeInsets.all(20),
-                    color: Colors.black12,
-                    child: const CircularProgressIndicator.adaptive(),
-                    alignment: Alignment.center,
-                  )
-                : Container(),
-          ],
-        );
+            ],
+          ),
+        ),
+        autoRun
+            ? Container(
+          padding: EdgeInsets.all(20),
+          color: Colors.black12,
+          child: const CircularProgressIndicator.adaptive(),
+          alignment: Alignment.center,
+        )
+            : Container(),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return OrientationBuilder(builder: (context, orientation) {
+      if (orientation == Orientation.portrait) {
+        return portraitWidget();
+      } else {
+        return landscapeWidget();
       }
     });
   }
